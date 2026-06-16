@@ -67,4 +67,16 @@ public class Map
     {
         return FindRoom(player.X, player.Y);
     }
+    
+    public void AddRoom(Room room)
+    {
+        _rooms.TryAdd((room.X, room.Y), room);
+    }
+
+    public void AddPathway(Pathway pathway)
+    {
+        //obousmerna cesta
+        _pathways.TryAdd((pathway.Room1, pathway.Room2), pathway);
+        _pathways.TryAdd((pathway.Room2, pathway.Room1), pathway);
+    }
 }

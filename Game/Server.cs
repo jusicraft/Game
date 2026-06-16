@@ -1,61 +1,85 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Game
 {
     public class Server
     {
-        private TcpListener myServer;
-        private bool isRunning;
+        private TcpListener _server;
+        private Map _map;
 
         public Server(int port)
         {
-            myServer = new TcpListener(System.Net.IPAddress.Any, port);
-            myServer.Start();
-            isRunning = true;
-            ServerLoop();
+            _server = new TcpListener(IPAddress.Any, port);
+            _map = new Map();
+            
+            _map = new Map();
+            
+            try
+            {
+                WorldLoader.Load("world.json", _map);
+                Console.WriteLine("Herní svět byl úspěšně načten z JSONu.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Kritická chyba při načítání světa: {ex.Message}");
+                Environment.Exit(1); 
+            }
         }
 
-        private void ServerLoop()
+        public async Task StartAsync()
         {
-            Console.WriteLine("Server byl spusten");
-            while (isRunning)
-            {
-                TcpClient client = myServer.AcceptTcpClient();
-                Thread thread = new Thread(new ParameterizedThreadStart(ClientLoop));
-                thread.Start(client);
-            }
+            _server.Start();
+            Console.WriteLine("Server naslouchá na portu " + ((IPEndPoint)_server.LocalEndpoint).Port);
 
+            while (true)
+            {
+                TcpClient client = await _server.AcceptTcpClientAsync();
+                _ = HandleClientAsync(client);
+            }
         }
 
-        private void ClientLoop(object obj)
+        private async Task HandleClientAsync(TcpClient client)
         {
-            TcpClient client = (TcpClient)obj;
-            StreamReader reader = new StreamReader(client.GetStream(), Encoding.UTF8);
-            StreamWriter writer = new StreamWriter(client.GetStream(), Encoding.UTF8);
-
-            writer.WriteLine("Byl jsi pripojen");
-            writer.Flush();
-            bool clientConnect = true;
-            string data = null;
-            string dataRecive = null;
-            while (clientConnect)
+            Player? player = null;
+            try
             {
-                data = reader.ReadLine();
-                data = data.ToLower();
-                //nejak data zpracuji
+                using NetworkStream stream = client.GetStream();
+                using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                using StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
 
-                dataRecive = data;
-                writer.WriteLine(dataRecive);
-                writer.Flush();
+                await writer.WriteLineAsync("Vítej v MUDu! Zadej své jméno:");
+                string? name = await reader.ReadLineAsync();
+
+                if (string.IsNullOrWhiteSpace(name)) return;
+
+                player = new Player { Name = name, Writer = writer };
+                
+                //kdyz se hrac spawne
+                await writer.WriteLineAsync($"\nVítej, {player.Name}! Nápovědu zobrazíš příkazem 'pomoc'.");
+                Command.Execute("prozkoumej", player, _map);
+
+                //gameloop
+                while (true)
+                {
+                    string? input = await reader.ReadLineAsync();
+                    if (input == null) break;
+
+                    Command.Execute(input.Trim().ToLower(), player, _map);
+                }
             }
-
+            catch (Exception)
+            {
+                Console.WriteLine($"Klient {player?.Name ?? "Neznámý"} se neočekávaně odpojil.");
+            }
+            finally
+            {
+                client.Close();
+            }
         }
     }
 }

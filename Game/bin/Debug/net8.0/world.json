@@ -1,0 +1,33 @@
+﻿{
+  "Rooms": [
+    {
+      "X": 0,
+      "Y": 0,
+      "Name": "Náměstí",
+      "Description": "Stojíš na rušném náměstí. Všude kolem je hluk a shon.",
+      "Items": [
+        { "Name": "Kámen" }
+      ],
+      "Npcs": [
+        { "Name": "Strážný", "Dialog": "Dávej si tu pozor, cizinče!" }
+      ]
+    },
+    {
+      "X": 0,
+      "Y": 1,
+      "Name": "Severní brána",
+      "Description": "Zde se nachází masivní dřevěná brána směřující na sever.",
+      "Items": [
+        { "Name": "Zlatý klíč", "KeyId": 1 }
+      ],
+      "Npcs": []
+    }
+  ],
+  "Pathways": [
+    {
+      "Room1X": 0, "Room1Y": 0,
+      "Room2X": 0, "Room2Y": 1,
+      "UnlockId": 0
+    }
+  ]
+}

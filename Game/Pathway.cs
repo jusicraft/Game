@@ -1,10 +1,16 @@
-﻿namespace Game;
+namespace Game;
 
 public class Pathway
 {
-    private Room _room1;
-    private Room _room2;
-    private int _unlockID;
+    private string _name = string.Empty;
+    private Room _room1 = null!;
+    private Room _room2 = null!;
+    private int _unlockId;
+
+    public string Name
+    {
+        get => _name;
+    }
 
     public Room Room1
     {
@@ -20,8 +26,8 @@ public class Pathway
 
     public int UnlockId
     {
-        get => _unlockID;
-        set => _unlockID = value;
+        get => _unlockId;
+        set => _unlockId = value;
     }
 
     public bool HasRooms(Room room1, Room room2)

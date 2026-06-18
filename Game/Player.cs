@@ -9,6 +9,14 @@ public class Player
     private List<Item> _inventory = new List<Item>();
     private StreamWriter _writer = null!;
 
+    public List<Item> Inventory => _inventory;
+
+    public string PasswordHash { get; set; } = string.Empty;
+
+    public List<string> AnsweredNpcs { get; set; } = new();
+
+    public string ActiveQuestionNpc { get; set; } = string.Empty;
+
     public string Name
     {
         get => _name;

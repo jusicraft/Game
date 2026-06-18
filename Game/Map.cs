@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Game;
 
@@ -39,10 +41,25 @@ public class Map
         {
             return false;
         }
+
+        var fromPlayers = currentRoom.Players.Where(p => p != player).ToList();
+        foreach (var p in fromPlayers)
+        {
+            p.Writer.WriteLine($"\nHráč {player.Name} odešel do místnosti: {nextRoom.Name}.");
+        }
+
+        currentRoom.Players.Remove(player);
+        nextRoom.Players.Add(player);
+
+        var toPlayers = nextRoom.Players.Where(p => p != player).ToList();
+        foreach (var p in toPlayers)
+        {
+            p.Writer.WriteLine($"\nHráč {player.Name} vstoupil do místnosti.");
+        }
+
         player.X += byX;
         player.Y += byY;
         return true;
-        
     }
 
     public Room? FindRoom(int byX, int byY)
@@ -78,5 +95,62 @@ public class Map
         //obousmerna cesta
         _pathways.TryAdd((pathway.Room1, pathway.Room2), pathway);
         _pathways.TryAdd((pathway.Room2, pathway.Room1), pathway);
+    }
+
+    public List<Pathway> GetPathwaysFromRoom(Room room)
+    {
+        return _pathways.Keys
+            .Where(k => k.room1 == room)
+            .Select(k => _pathways[k])
+            .OrderBy(p => (p.Room1 == room ? p.Room2 : p.Room1).Name)
+            .ToList();
+    }
+
+    public List<string> GetAllNpcNames()
+    {
+        return _rooms.Values
+            .SelectMany(r => r.Npcs)
+            .Select(n => n.Name)
+            .Distinct()
+            .ToList();
+    }
+
+    public List<Room> GetAllRooms()
+    {
+        return _rooms.Values.ToList();
+    }
+
+    public string GetKeyName(int unlockId, Player player)
+    {
+        var key = player.FindKeyById(unlockId);
+        if (key != null) return key.Name;
+
+        foreach (var room in _rooms.Values)
+        {
+            foreach (var item in room.Items)
+            {
+                if (item is Key k && k.Id == unlockId)
+                {
+                    return k.Name;
+                }
+            }
+        }
+
+        return "klíč";
+    }
+
+    public void AddPlayer(Player player)
+    {
+        _players.TryAdd((player.Name.ToLowerInvariant(), player), player);
+    }
+
+    public void RemovePlayer(Player player)
+    {
+        _players.TryRemove((player.Name.ToLowerInvariant(), player), out _);
+    }
+
+    public List<Player> GetAllPlayers()
+    {
+        return _players.Values.ToList();
     }
 }

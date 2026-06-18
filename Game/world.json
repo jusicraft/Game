@@ -1,4 +1,4 @@
-﻿{
+{
   "Rooms": [
     {
       "X": 0,
@@ -6,10 +6,30 @@
       "Name": "Náměstí",
       "Description": "Stojíš na rušném náměstí. Všude kolem je hluk a shon.",
       "Items": [
-        { "Name": "Kámen" }
+        {
+          "Name": "Kámen",
+          "Effect": "zprava",
+          "EffectMessage": "Kámen ti šeptá tajemství: 'Zodpověz otázky a vyhraješ!'",
+          "SingleUse": false
+        },
+        {
+          "Name": "Svitek teleportu",
+          "Effect": "teleport",
+          "EffectValue": "0,1",
+          "EffectMessage": "Přečetl jsi prastarý svitek. Záblesk světla tě přenesl k Severní bráně!",
+          "SingleUse": true
+        }
       ],
       "Npcs": [
-        { "Name": "Strážný", "Dialog": "Dávej si tu pozor, cizinče!" }
+        {
+          "Name": "Strážný",
+          "Dialog": "Dávej si tu pozor, cizinče!",
+          "DialogOptions": [
+            { "Condition": "no_key", "Text": "Ztratil jsem svůj zlatý klíč v Severní bráně. Pokud ho najdeš, pomůže ti." },
+            { "Condition": "has_key", "Text": "Vidím, že máš můj zlatý klíč! Dobrá práce!" },
+            { "Condition": "answered", "Text": "Jsi velmi moudrý, cizinče. Už tě nebudu zdržovat." }
+          ]
+        }
       ]
     },
     {
@@ -18,8 +38,29 @@
       "Name": "Severní brána",
       "Description": "Zde se nachází masivní dřevěná brána směřující na sever.",
       "Items": [
-        { "Name": "Zlatý klíč", "KeyId": 1 }
+        {
+          "Name": "Zlatý klíč",
+          "KeyId": 1
+        }
       ],
+      "Npcs": [
+        {
+          "Name": "Hudebník",
+          "Dialog": "Miluji klasickou hudbu!",
+          "DialogOptions": [
+            { "Condition": "no_key", "Text": "Běž se podívat na náměstí, prý tam leží zajímavé kameny." },
+            { "Condition": "has_key", "Text": "Ten klíč, co neseš, vypadá prastaře." },
+            { "Condition": "answered", "Text": "Tvá hudební znalost mě ohromila." }
+          ]
+        }
+      ]
+    },
+    {
+      "X": 0,
+      "Y": -1,
+      "Name": "Krypta",
+      "Description": "Temná, chladná krypta plná prachu a prastarých hrobek.",
+      "Items": [],
       "Npcs": []
     }
   ],
@@ -28,6 +69,11 @@
       "Room1X": 0, "Room1Y": 0,
       "Room2X": 0, "Room2Y": 1,
       "UnlockId": 0
+    },
+    {
+      "Room1X": 0, "Room1Y": 0,
+      "Room2X": 0, "Room2Y": -1,
+      "UnlockId": 1
     }
   ]
 }

@@ -44,17 +44,44 @@ namespace Game
                 {
                     if (itemData.KeyId.HasValue)
                     {
-                        room.Items.Add(new Key { Name = itemData.Name, Id = itemData.KeyId.Value });
+                        room.Items.Add(new Key
+                        {
+                            Name = itemData.Name,
+                            Id = itemData.KeyId.Value,
+                            Effect = itemData.Effect,
+                            EffectValue = itemData.EffectValue,
+                            EffectMessage = itemData.EffectMessage,
+                            SingleUse = itemData.SingleUse
+                        });
                     }
                     else
                     {
-                        room.Items.Add(new Item { Name = itemData.Name });
+                        room.Items.Add(new Item
+                        {
+                            Name = itemData.Name,
+                            Effect = itemData.Effect,
+                            EffectValue = itemData.EffectValue,
+                            EffectMessage = itemData.EffectMessage,
+                            SingleUse = itemData.SingleUse
+                        });
                     }
                 }
 
                 foreach (var npcData in roomData.Npcs)
                 {
-                    room.Npcs.Add(new Npc(npcData.Name, npcData.Dialog));
+                    var npc = new Npc(npcData.Name, npcData.Dialog);
+                    if (npcData.DialogOptions != null)
+                    {
+                        foreach (var opt in npcData.DialogOptions)
+                        {
+                            npc.DialogOptions.Add(new NpcDialogOption
+                            {
+                                Condition = opt.Condition,
+                                Text = opt.Text
+                            });
+                        }
+                    }
+                    room.Npcs.Add(npc);
                 }
 
                 map.AddRoom(room);

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Game
 {
@@ -22,12 +22,23 @@ namespace Game
     {
         public string Name { get; set; } = string.Empty;
         public int? KeyId { get; set; }
+        public string Effect { get; set; } = string.Empty;
+        public string EffectValue { get; set; } = string.Empty;
+        public string EffectMessage { get; set; } = string.Empty;
+        public bool SingleUse { get; set; }
     }
 
     public class NpcData
     {
         public string Name { get; set; } = string.Empty;
         public string Dialog { get; set; } = string.Empty;
+        public List<NpcDialogOptionData> DialogOptions { get; set; } = new();
+    }
+
+    public class NpcDialogOptionData
+    {
+        public string Condition { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
     }
 
     public class PathwayData

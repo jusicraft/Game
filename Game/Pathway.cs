@@ -10,6 +10,7 @@ public class Pathway
     public string Name
     {
         get => _name;
+        set => _name = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     public Room Room1
